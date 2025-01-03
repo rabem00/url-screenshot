@@ -1,42 +1,25 @@
-# Use a lightweight base image with Python
-FROM python:3.12-slim
+# Dockerfile
+FROM python:3.9-slim
 
-# Set environment variables
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install Chromium and dependencies
+# Install required packages including Chrome and ChromeDriver dependencies
 RUN apt-get update && apt-get install -y \
-    chromium-browser \
+    chromium \
     chromium-driver \
-    libglib2.0-0 \
-    libnss3 \
-    libx11-6 \
-    libx11-xcb1 \
-    libxcb1 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxrandr2 \
-    libxrender1 \
-    libxss1 \
-    libxtst6 \
-    fonts-liberation \
-    xdg-utils \
-    --no-install-recommends && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-# Install required Python libraries
-COPY requirements.txt /tmp/requirements.txt
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+# Set display port to avoid crash
+ENV DISPLAY=:99
 
-# Copy the Selenium script
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the screenshot script
+COPY url-screenshot.py /app/
 WORKDIR /app
-COPY url-screenshot.py /app/url-screenshot.py
 
-# Set script to be executable
-RUN chmod +x /app/url-screenshot.py
+# Create directory for screenshots
+RUN mkdir -p /app/screenshots
 
-# Set the entry point
-ENTRYPOINT ["python3", "/app/url-screenshot.py"]
+# Set the entrypoint
+ENTRYPOINT ["python3", "url-screenshot.py"]

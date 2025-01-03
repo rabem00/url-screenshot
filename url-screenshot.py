@@ -7,45 +7,47 @@
 import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+import time
 
-def render_page(url, output_file):
-    # run Chrome in headless mode
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    # start a driver instance
-    driver = webdriver.Chrome(options=options)
+def take_screenshot(url, output_file):
+    # Configure Chrome options
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')  # Run in headless mode
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--disable-gpu')
+    
+    # Initialize the Chrome driver
+    service = Service('/usr/bin/chromedriver')
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+    
     try:
-        # open the target website
+        # Set window size
+        driver.set_window_size(1920, 1080)
+        
+        # Navigate to URL
         driver.get(url)
-
-        # define a function to get scroll dimensions
-        def get_scroll_dimension(axis):
-            return driver.execute_script(f"return document.body.parentNode.scroll{axis}")
-
-        # get the page scroll dimensions
-        width = get_scroll_dimension("Width")
-        height = get_scroll_dimension("Height")
-
-        # set the browser window size
-        driver.set_window_size(width, height)
-
-        # get the full body element
-        full_body_element = driver.find_element(By.TAG_NAME, "body")
-
-        # take a full-page screenshot
-        full_body_element.screenshot(output_file)
+        
+        # Wait for page to load (adjust if needed)
+        time.sleep(5)
+        
+        # Take screenshot
+        driver.save_screenshot(f"/app/screenshots/{output_file}")
+        print(f"Screenshot saved as {output_file}")
+        
+    except Exception as e:
+        print(f"Error taking screenshot: {str(e)}")
+        sys.exit(1)
+        
     finally:
-        # quit the browser
         driver.quit()
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python3 url-screenshot.py <url> <output_file PNG>")
+        print("Usage: python3 url-screenshot.py <url> <output_file.png>")
         sys.exit(1)
-
+        
     url = sys.argv[1]
     output_file = sys.argv[2]
-    render_page(url, output_file)
+    take_screenshot(url, output_file)
