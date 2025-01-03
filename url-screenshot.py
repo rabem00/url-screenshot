@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Author: M. Rabelink
-# Date: 2024-13-12
+# Date: 2024-12-16
 # Description: take screenshot from url 
 #
 import sys
@@ -43,7 +43,7 @@ def render_page(url, output_file):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python3 selenium-screenshot.py <url> <output_file PNG>")
+        print("Usage: python3 url-screenshot.py <url> <output_file PNG>")
         sys.exit(1)
 
     url = sys.argv[1]
