@@ -22,4 +22,4 @@ WORKDIR /app
 RUN mkdir -p /app/screenshots
 
 # Set the entrypoint
-ENTRYPOINT ["python3", "url-screenshot.py"]
+ENTRYPOINT ["tail",  "-f", "url-screenshot.py"]
