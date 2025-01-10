@@ -17,6 +17,7 @@ def take_screenshot(url, output_file):
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('--ignore-certificate-errors')  # Ignore SSL certificate errors
     
     # Initialize the Chrome driver
     service = Service('/usr/bin/chromedriver')
@@ -28,6 +29,13 @@ def take_screenshot(url, output_file):
         
         # Navigate to URL
         driver.get(url)
+
+        # Inject CSS to hide the scroll bar
+        driver.execute_script("""
+            let style = document.createElement('style');
+            style.innerHTML = 'body::-webkit-scrollbar { display: none; }';
+            document.head.appendChild(style);
+        """)
         
         # Wait for page to load (adjust if needed)
         time.sleep(5)
