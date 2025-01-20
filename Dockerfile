@@ -5,6 +5,7 @@ FROM python:3.9-slim
 RUN apt-get update && apt-get install -y \
     chromium \
     chromium-driver \
+    tini \
     && rm -rf /var/lib/apt/lists/*
 
 # Set display port to avoid crash
